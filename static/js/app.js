@@ -126,10 +126,11 @@ d3.json("data/samples.json").then((data) => {
     var meanScrubFreq = sumScrubFreq / countScrubFreq;
     console.log(`meanScrubFreq: ${meanScrubFreq}`);
     
+    // get the initial scrub frequency
     var initScrubFreq = initMeta[0].wfreq;
     console.log(`initScrubFreq: ${initScrubFreq}`);
 
-    // initialize gauge
+    // initialize gauge plot
     function initGauge () {
         var dataGauge = [
             {
@@ -173,7 +174,7 @@ d3.json("data/samples.json").then((data) => {
         // Assign the value of the dropdown menu option to a variable
         var dataset = this.value;
         console.log(`dataset: ${dataset}`);
-
+        // iterate through the samples data to get the sample data corresponding to the selected subject ID
         for (var i = 0; i < samples.length; ++i) {
             if (samples[i].id === dataset) {
                 console.log(samples[i].id);
@@ -183,6 +184,7 @@ d3.json("data/samples.json").then((data) => {
             };
         };
 
+        // assign the subject ID's OTUs, sample_values, and otu_labels to variables to use with bubble plot
         var idOTUs = idSample.otu_ids;
         var idValues = idSample.sample_values;
         var idLabels = idSample.otu_labels;
@@ -213,8 +215,9 @@ d3.json("data/samples.json").then((data) => {
         console.log(`idPlotLabels ${idPlotLabels}`);
         console.log(`reverse_idPlotLabels ${reverse_idPlotLabels}`);
 
-        var idMeta = [];
         // get the metadata for id selected in dropdown
+        var idMeta = [];
+        
         for (var i = 0; i < metadata.length; ++i) {
             if (metadata[i].id === parseInt(dataset)) {
                 console.log(metadata[i].id);
@@ -224,7 +227,10 @@ d3.json("data/samples.json").then((data) => {
             };
         };
         
+        // clear the demographic list before populating a new list of demos corresponding to selected subject ID
         document.getElementById('sample-metadata').innerHTML = "";
+
+        // populate a list of demographics for selected subject ID
         var ul = d3.select('#sample-metadata').append('ul');
         idMeta.forEach(demo => {
             // var ul = panel.append('ul');
@@ -233,6 +239,7 @@ d3.json("data/samples.json").then((data) => {
             });
         });
 
+        // get scrub frequency for selected subject ID
         var idScrubFreq = idMeta[0].wfreq;
         console.log(`idScrubFreq: ${idScrubFreq}`);
     
@@ -246,6 +253,7 @@ d3.json("data/samples.json").then((data) => {
         //     orientation: 'h'
         // }];
 
+        // update bar plot with selected subject ID's data
         var barx = reverse_idPlotValues;
         var bary = reverse_idconcatOTUs;
         var bartext = reverse_idPlotLabels;
@@ -262,7 +270,7 @@ d3.json("data/samples.json").then((data) => {
         // updateBar(idDataBar);
         // };
 
-        
+
         // update the Bubble plot
         // function initBubble () {
         // var idDataBubble = {
@@ -275,6 +283,8 @@ d3.json("data/samples.json").then((data) => {
         //         size: idValues,
         //     }
         // };
+
+        // update bubble plot with selected subject ID's data
         var bubblex = idOTUs;
         var bubbley = idValues;
         var bubbletext = idLabels;
@@ -295,11 +305,11 @@ d3.json("data/samples.json").then((data) => {
         // updateBubble(idDataBubble);
         
         // };
+
+        // update gauge plot with selected subject ID's data
         var gaugevalue = idScrubFreq;
         
         Plotly.restyle("gauge", "value", [gaugevalue]);
-
-        
         
     };
 
@@ -311,6 +321,7 @@ d3.json("data/samples.json").then((data) => {
 //     Plotly.restyle("bubble", "values", [newbubbledata], [0]);
 // };
 
+// initialize plots on page load or refresh
 initBar();
 initBubble();
 initGauge();
