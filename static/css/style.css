@@ -1,0 +1,20 @@
+
+.jumbotron {
+    height: 200px;
+    padding-top: 20px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+#bar {
+    padding-left: 50px;
+}
+
+#bellybuttons {
+    padding-left: 0px;
+    margin-left: 0px;
+}
