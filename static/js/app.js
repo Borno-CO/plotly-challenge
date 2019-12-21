@@ -1,13 +1,11 @@
+// read the data with promise function and set variables for further parsing and selection
 d3.json("data/samples.json").then((data) => {
 
     var names = data.names;
-    console.log(names);
 
     var metadata = data.metadata;
-    console.log(metadata);
 
     var samples = data.samples;
-    console.log(samples);
     
     // Get dropdown element from DOM
     var dropdown = document.getElementById("selDataset");
@@ -26,7 +24,7 @@ d3.json("data/samples.json").then((data) => {
         dropdown.add( new Option(names[i]));
     };
 
-    // get the first sample for the init plot variables
+    // use the first sample in the data for the init plot variables
     var initSample = samples[0];
     var initOTUs = initSample.otu_ids;
     var initValues = initSample.sample_values;
@@ -45,17 +43,6 @@ d3.json("data/samples.json").then((data) => {
     for (i = 0; i < reverse_initPlotOTUs.length; ++i) {
         reverse_initconcatOTUs.push(`OTU ${reverse_initPlotOTUs[i]}`);
     };
-    // check the init variables
-    console.log(initSample);
-    console.log(`initOTUs ${initOTUs}`);
-    console.log(`initPlotOTUs ${initPlotOTUs}`);
-    console.log(`reverse_initPlotOTUs ${reverse_initPlotOTUs}`);
-    console.log(`reverse_initconcatOTUs ${reverse_initconcatOTUs}`);
-    console.log(`initValues ${initValues}`);
-    console.log(`initPlotValues ${initPlotValues}`);
-    console.log(`reverse_initPlotValues ${reverse_initPlotValues}`);
-    console.log(`initPlotLabels ${initPlotLabels}`);
-    console.log(`reverse_initPlotLabels ${reverse_initPlotLabels}`);
 
     // initialize the Bar plot
     function initBar () {
@@ -64,7 +51,11 @@ d3.json("data/samples.json").then((data) => {
             y: reverse_initconcatOTUs,
             text: reverse_initPlotLabels,
             type: 'bar',
-            orientation: 'h'
+            orientation: 'h',
+            marker: { 
+                color: 'rebeccapurple',
+                width: 1
+            }
         }];
 
         var layoutBar = {
@@ -74,6 +65,7 @@ d3.json("data/samples.json").then((data) => {
         };
         Plotly.newPlot("bar", dataBar, layoutBar);
     };
+
     // initialize the Bubble plot
     function initBubble () {
         var dataBubble = [{
@@ -93,14 +85,11 @@ d3.json("data/samples.json").then((data) => {
             yaxis: { title: "Sample Value" }
         };
 
-        // var CHART = d3.selectAll("#bar").node();
-
         Plotly.newPlot("bubble", dataBubble, layoutBubble);
     };
 
     // initialize demographics
     var initMeta = [metadata[0]];
-    console.log(initMeta);
 
     var ul = d3.select('#sample-metadata').append('ul');
     initMeta.forEach(demo => {
@@ -121,14 +110,11 @@ d3.json("data/samples.json").then((data) => {
             countScrubFreq += 1;
         }
     };
-    console.log(`allScrubFreq: ${allScrubFreq}`);
-    console.log(countScrubFreq);
+    
     var meanScrubFreq = sumScrubFreq / countScrubFreq;
-    console.log(`meanScrubFreq: ${meanScrubFreq}`);
     
     // get the initial scrub frequency
     var initScrubFreq = initMeta[0].wfreq;
-    console.log(`initScrubFreq: ${initScrubFreq}`);
 
     // initialize gauge plot
     function initGauge () {
@@ -162,24 +148,22 @@ d3.json("data/samples.json").then((data) => {
         
         var layout = { width: 500, height: 400, margin: { t: 0, b: 0 } };
         Plotly.newPlot('gauge', dataGauge, layout);
+    
     };
-    // document.getElementByID("selDataset").reset();
-    // d3.select("#selDataset").node().value = "";
+    
+    // event listener to invoke handler function on change of dropdown menu
     d3.selectAll("#selDataset").on("change", optionChanged);
 
+    // event handler function
     function optionChanged(value) {
-        // Use D3 to select the dropdown menu
-        console.log(this.value);
-        // console.log(`The selected value is ${value}`)
+
         // Assign the value of the dropdown menu option to a variable
         var dataset = this.value;
-        console.log(`dataset: ${dataset}`);
+
         // iterate through the samples data to get the sample data corresponding to the selected subject ID
         for (var i = 0; i < samples.length; ++i) {
             if (samples[i].id === dataset) {
-                console.log(samples[i].id);
                 var idSample = samples[i];
-                console.log(idSample);
                 break;
             };
         };
@@ -203,26 +187,12 @@ d3.json("data/samples.json").then((data) => {
             reverse_idconcatOTUs.push(`OTU ${reverse_idPlotOTUs[i]}`);
         };
 
-        // check the selected ID variables
-        // console.log(idSample);
-        console.log(`idOTUs ${idOTUs}`);
-        console.log(`idPlotOTUs ${idPlotOTUs}`);
-        console.log(`reverse_idPlotOTUs ${reverse_idPlotOTUs}`);
-        console.log(`reverse_idconcatOTUs ${reverse_idconcatOTUs}`);
-        console.log(`idValues ${idValues}`);
-        console.log(`idPlotValues ${idPlotValues}`);
-        console.log(`reverse_idPlotValues ${reverse_idPlotValues}`);
-        console.log(`idPlotLabels ${idPlotLabels}`);
-        console.log(`reverse_idPlotLabels ${reverse_idPlotLabels}`);
-
         // get the metadata for id selected in dropdown
         var idMeta = [];
         
         for (var i = 0; i < metadata.length; ++i) {
             if (metadata[i].id === parseInt(dataset)) {
-                console.log(metadata[i].id);
                 idMeta.push(metadata[i]);
-                console.log(idMeta);
                 break;
             };
         };
@@ -241,17 +211,6 @@ d3.json("data/samples.json").then((data) => {
 
         // get scrub frequency for selected subject ID
         var idScrubFreq = idMeta[0].wfreq;
-        console.log(`idScrubFreq: ${idScrubFreq}`);
-    
-        // update the Bar plot data
-        // function updateBar () {
-        // var idDataBar = [{
-        //     x: reverse_idPlotValues,
-        //     y: reverse_idconcatOTUs,
-        //     text: reverse_idPlotLabels,
-        //     type: 'bar',
-        //     orientation: 'h'
-        // }];
 
         // update bar plot with selected subject ID's data
         var barx = reverse_idPlotValues;
@@ -261,28 +220,6 @@ d3.json("data/samples.json").then((data) => {
         Plotly.restyle("bar", "x", [barx]);
         Plotly.restyle("bar", "y", [bary]);
         Plotly.restyle("bar", "text", [bartext]);
-        // var layoutBar = {
-        //     title: "Top 10 OTUs",
-        //     xaxis: { title: "Sample Value" },
-        //     yaxis: { title: "OTU_ID" }
-        // };
-        // Plotly.restyle("bar", "values", [idDataBar], 0);
-        // updateBar(idDataBar);
-        // };
-
-
-        // update the Bubble plot
-        // function initBubble () {
-        // var idDataBubble = {
-        //     x: idOTUs,
-        //     y: idValues,
-        //     text: idLabels,
-        //     mode: 'markers',
-        //     marker: {
-        //         color: idOTUs,
-        //         size: idValues,
-        //     }
-        // };
 
         // update bubble plot with selected subject ID's data
         var bubblex = idOTUs;
@@ -296,36 +233,24 @@ d3.json("data/samples.json").then((data) => {
         Plotly.restyle("bubble", "text", [bubbletext]);
         Plotly.restyle("bubble", "color", [bubblecolor]);
         Plotly.restyle("bubble", "size", [bubblesize]);
-        // var layoutBubble = {
-        //     title: "Sample Values by OTU_ID",
-        //     xaxis: { title: "OTU_ID" },
-        //     yaxis: { title: "Sample Value" }
-        // };
-        // Plotly.restyle("bubble", idDataBubble);
-        // updateBubble(idDataBubble);
         
-        // };
-
         // update gauge plot with selected subject ID's data
         var gaugevalue = idScrubFreq;
         
         Plotly.restyle("gauge", "value", [gaugevalue]);
         
+        // append humorous image
+        d3.select('#bellybuttons').html('<br><br><h4>What\'s in yours?</h4><iframe src="https://giphy.com/embed/11x3F1cvBdTIcM" width="360" height="180" position="absolute" frameBorder="0" class="giphy-embed"></iframe><p><a href="https://giphy.com/gifs/11x3F1cvBdTIcM">via GIPHY</a></p>');
+        document.getElementById('video-by').innerHTML = "";
+        d3.select('#video-by').append('p').text(`It\'s My Belly Button (song) by Rhett & Link`);
     };
-
-// function updateBar(newbardata) {
-//     Plotly.restyle("bar", "values", [newbardata]), [0];
-// };
-
-// function updateBubble(newbubbledata) {
-//     Plotly.restyle("bubble", "values", [newbubbledata], [0]);
-// };
 
 // initialize plots on page load or refresh
 initBar();
 initBubble();
 initGauge();
+
 });
 
-
+// end of script
 
