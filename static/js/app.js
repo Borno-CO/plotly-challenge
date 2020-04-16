@@ -239,11 +239,6 @@ d3.json("data/samples.json").then((data) => {
         
         Plotly.restyle("gauge", "value", [gaugevalue]);
         
-        // append humorous image
-        document.getElementById('bellybuttons').innerHTML = "";
-        d3.select('#bellybuttons').html('<br><br><h4>What\'s in yours?</h4><iframe src="https://giphy.com/embed/11x3F1cvBdTIcM" width="360" height="180" position="absolute" frameBorder="0" class="giphy-embed"></iframe><p><a href="https://giphy.com/gifs/11x3F1cvBdTIcM">via GIPHY</a></p>');
-        document.getElementById('video-by').innerHTML = "";
-        d3.select('#video-by').append('p').text(`It\'s My Belly Button (song) by Rhett & Link`);
     };
 
 // initialize plots on page load or refresh
